@@ -54,6 +54,8 @@ def get_crossincode_run():
 
 
 def get_crossincode_ips():
+	#加个延时，避免在一起爬取数据
+	time.sleep(20)
 	while 1:
 		get_crossincode_run()
 		print("sleep...")
@@ -112,6 +114,7 @@ def get_xiladaili_run():
 
 
 def get_xiladaili_ips():
+	time.sleep(40)
 	while 1:
 		get_xiladaili_run()
 		print("sleep...")
@@ -120,8 +123,46 @@ def get_xiladaili_ips():
 
 
 
-#		
-#		
-#		
+#		jiangxianli
+#		http://ip.jiangxianli.com/?page=1   
+#		page 1~3(原网站会更新，取前三页就好)
 
+
+
+
+
+
+
+#		superfastip
+#		http://www.superfastip.com/welcome/freeip/1  
+#		/1  ~  /10
+
+
+
+
+
+#		kxdaili
+#		http://www.kxdaili.com/dailiip/1/1.html 
+#		http://www.kxdaili.com/dailiip/2/1.html 
+
+
+
+
+
+
+
+#		mimvp
+#		https://proxy.mimvp.com/freesecret.php?proxy=in_hp&sort=&page=1 
+#		https://proxy.mimvp.com/freesole.php
+# 		https://proxy.mimvp.com/freeopen.php?proxy=in_hp&sort=&page=1
+
+
+
+
+
+
+
+#		kuaidaili
+#		https://www.kuaidaili.com/free/inha/1/ 
+#		/1   ~   /100
 

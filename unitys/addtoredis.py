@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding=utf-8 -*-
+__author__ = 'Man Li' 
+
 import redis
 
 HostIP = '192.168.1.20'
