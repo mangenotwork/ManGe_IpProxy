@@ -43,12 +43,32 @@ def get_onlytr_data(html):
     data = re.findall(reger, str(html))
     return data
 
+def get_alltr_data(html):
+    reg = r"(<tr>|<tr.+?>)(.+?)</tr>"
+    reger = re.compile(reg, re.S)
+    data = re.findall(reger, str(html))
+    return data
+
+
 #获取td
 def get_onlytd_data(html):
     reg = r"<td>(.+?)</td>"
     reger = re.compile(reg, re.S)
     data = re.findall(reger, str(html))
     return data
+
+def get_alltd_data(html):
+    reg = r"(<td>|<td.+?>)(.+?)</td>"
+    reger = re.compile(reg, re.S)
+    data = re.findall(reger, str(html))
+    return data
+
+def get_propertytd_data(html):
+    reg = r"<td.+?>(.+?)</td>"
+    reger = re.compile(reg, re.S)
+    data = re.findall(reger, str(html))
+    return data
+
 
 #获取table
 def get_table(html):

@@ -10,6 +10,7 @@ import random
 import requests
 from requests.exceptions import ReadTimeout, ConnectionError, RequestException
 
+import unitys.addtoredis as addtoredis
 
 defaultencoding = 'utf-8'
 if sys.getdefaultencoding() != defaultencoding:
@@ -65,7 +66,12 @@ HEADER = {
 
 }
 
-
+def iPProxie(): 
+    ipinfo = addtoredis.get_ips()
+    httpinfo = str(ipinfo).split("://")
+    proxy_dict = {str(httpinfo[0]):str(ipinfo),}
+    print(proxy_dict)
+    return proxy_dict
 
 class ManGeReq():
     """docstring for ManGeRep"""
@@ -73,7 +79,7 @@ class ManGeReq():
         pass
     
     @classmethod
-    def geturl(cls, url_path, payload = '', cookies = '',proxies = ''):
+    def geturl(cls, url_path, payload='', cookies='', proxies=''):
         #Get请求
         try:
             s = requests.Session()
@@ -84,7 +90,7 @@ class ManGeReq():
                     cookies=cookies,#cookies
                     verify=False,#SSL验证 @verify False忽略;True开启
                     proxies=proxies,#代理
-                    timeout=30)#@timeout 超时单位 秒
+                    timeout=5)#@timeout 超时单位 秒
             r.raise_for_status()
             #防止中文乱码
             #r.encoding = 'gb2312'
@@ -92,18 +98,18 @@ class ManGeReq():
         except ReadTimeout:
             print('Timeout')
             #time.sleep(5)
-            #return get_html(url_path)
+            return cls.geturl(url_path, proxies=iPProxie())
         except ConnectionError:
             print('Connection error')
             #time.sleep(5)
-            #return get_html(url_path)
+            return cls.geturl(url_path, proxies=iPProxie())
         except RequestException:
             print('RequestException')
             #time.sleep(5)
-            #return get_html(url_path)
+            return cls.geturl(url_path, proxies=iPProxie())
 
     @classmethod
-    def posturl(cls, url_path, datas, payload = '', cookies = '',proxies = ''):
+    def posturl(cls, url_path, datas, payload='', cookies='', proxies=''):
         #Post请求
         try:
             s = requests.Session()
@@ -127,7 +133,40 @@ class ManGeReq():
         except RequestException:
             print('RequestException')
 
+    @classmethod
+    def geturl_proxy(cls, url_path, payload='', cookies=''):
+        ipinfo = addtoredis.get_ips()
+        httpinfo = str(ipinfo).split("://")
+        proxy_dict = {str(httpinfo[0]):str(ipinfo),}
+        print(proxy_dict)
+        try:
+            s = requests.Session()
+            r = s.get(
+                    url_path,#路径
+                    headers=HEADER,#请求头
+                    params=payload,#传参 @payload 字典或者json
+                    cookies=cookies,#cookies
+                    verify=False,#SSL验证 @verify False忽略;True开启
+                    proxies=proxy_dict,#代理
+                    timeout=5)#@timeout 超时单位 秒
+            r.raise_for_status()
+            #防止中文乱码
+            #r.encoding = 'gb2312'
+            return r.text
+        except ReadTimeout:
+            print('Timeout')
+            return cls.geturl_proxy(url_path)
+        except ConnectionError:
+            print('Connection error')
+            return cls.geturl_proxy(url_path)
+        except RequestException:
+            print('RequestException')
+            return cls.geturl_proxy(url_path)
+
+
 
 
 def test():
 	print("aaaaa")    
+
+

@@ -22,7 +22,8 @@ import ips_get as getips
 #ip队列
 IPQueue = "ip:queue"
 #ip代理池
-IPPools = "ips:pool"
+#IPPools = "ips:pool"
+IPPools = "ips:qgjz"
 #redis主机ip地址
 HostIP = '192.168.1.20'
 
@@ -33,8 +34,8 @@ r =  redis.StrictRedis(connection_pool = pool)
 
 #验证代理ip有效性地址
 #JCUrl = "http://jzsc2016.mohurd.gov.cn/asite/jsbpp/index"
-JCUrl = "https://www.baidu.com/"
-#JCUrl = "http://www.httpbin.org/ip"
+#JCUrl = "https://www.baidu.com/"
+JCUrl = "http://www.httpbin.org/ip"
 
 #验证代理的相对响应时间
 NormalTime = 1.0
@@ -225,8 +226,8 @@ def go_main():
         pool.apply_async(go_yzips, ())#IP队列赛选进程
         pool.apply_async(go_ipChecker, ())#IP池检查进程
         pool.apply_async(nimadaili.go_nimadaili_run, ())# nimadaili 代理爬虫
-        pool.apply_async(getips.get_crossincode_ips, ())# crossincode 代理爬虫
-        pool.apply_async(getips.get_xiladaili_ips, ())# xiladaili 代理爬虫
+        pool.apply_async(getips.get_kuaidaili_ips, ())# kuaidaili 代理爬虫
+        pool.apply_async(getips.get_ip_run, ())# 代理爬虫
         #print("有进程死掉,等待3s")
         time.sleep(3)
     print("-----start-----")

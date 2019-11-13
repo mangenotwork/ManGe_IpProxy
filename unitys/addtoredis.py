@@ -2,6 +2,7 @@
 # -*- coding=utf-8 -*-
 __author__ = 'Man Li' 
 
+import random
 import redis
 
 HostIP = '192.168.1.20'
@@ -17,4 +18,14 @@ def add(ips):
 	r =  redis.StrictRedis(connection_pool = pool)
 	r.rpush("ip:queue",ips)
 
-
+def get_ips():
+    r =  redis.StrictRedis(connection_pool = pool)
+    ipnumber = r.zcard('ips:qgjz')
+    if ipnumber <= 1:
+        number = 0
+    else:
+        number = random.randint(0, ipnumber-1)
+    a = r.zrange('ips:qgjz',0,-1,desc=True)
+    #print(a)
+    print(a[number])
+    return a[number]
