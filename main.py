@@ -16,7 +16,7 @@ import multiprocessing
 import ips_nimadaili as nimadaili
 # 导入 爬取代理
 import ips_get as getips
-
+from unitys import addtoredis as toredis
 
 
 #ip队列
@@ -42,10 +42,12 @@ JCUrl = "http://www.httpbin.org/ip"
 NormalTime = 1.0
 
 #判断ip的存活性的线程数
-ipChecker_ThreadNumber = 5
+#ipChecker_ThreadNumber = 10
 
 #在ip队列里取出有效ip的线程数
-yzips_ThreadNumber = 5
+yzips_ThreadNumber = 20
+
+
 
 
 
@@ -140,7 +142,8 @@ def div_list(ls,n):
 
 #检查器
 # 每次全部取出，足个进行验证  能用保留 不能用删除，验证IP的存活性
-def ipChecker():
+@toredis.ipChecker_Thread
+def ipChecker(ipChecker_ThreadNumber):
     allips = r.zrange( IPPools, 0, -1, desc=True)
     gurpips = div_list( allips, ipChecker_ThreadNumber)
     #开启5个线程

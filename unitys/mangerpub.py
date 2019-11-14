@@ -92,3 +92,18 @@ def get_json89ip_zz(html):
     reger = re.compile(reg, re.S)
     data = re.findall(reger, str(html))
     return data
+
+
+def get_href(html):
+    reg = r"(?<=href=\").+?(?=\")|(?<=href=\').+?(?=\')"
+    reger = re.compile(reg, re.S)
+    data = re.findall(reger, str(html))
+    return data
+
+
+#获取 xsdaili 的正则
+def get_xsdaili_zz(html):
+    reg = r"<br/>(.+?)\@"
+    reger = re.compile(reg)
+    data = re.findall(reger, str(html))
+    return data

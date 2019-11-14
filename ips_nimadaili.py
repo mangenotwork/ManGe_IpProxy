@@ -31,25 +31,17 @@ def get_td_data(html):
     data = re.findall(reger, str(html))
     return data
 
-
+@toredis.IPQueue_MemoryProtection
 def nimadaili_run():
-
 	nimadaili_url = "http://www.nimadaili.com"
-
 	datas1 = mreq.ManGeReq.geturl(nimadaili_url)
 	#print(datas1)
-
 	#//*[@id="overflow"]/table/tbody
 	ipTbody = '//*[@id="overflow"]/table/tbody'
-
 	ipTbody_datas = rpub.PubXpath.get_html(datas1,ipTbody)
-
 	#print(len(get_tr_data(ipTbody_datas)))
-
 	iplists = get_tr_data(ipTbody_datas)
-
 	for ips in iplists:
-		
 		try:
 			ipsinfos = get_td_data(ips)
 			ipnumber = ipsinfos[0]
