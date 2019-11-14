@@ -10,6 +10,8 @@ import requests
 import threading
 import multiprocessing
 
+
+
 #from multiprocessing import Process
 
 # 导入 nimadaili 代理
@@ -17,7 +19,7 @@ import ips_nimadaili as nimadaili
 # 导入 爬取代理
 import ips_get as getips
 from unitys import addtoredis as toredis
-
+from unitys import mangecmd as mangecmd
 
 #ip队列
 IPQueue = "ip:queue"
@@ -247,4 +249,6 @@ def go_main():
 
 
 if __name__=='__main__':
+    mangecmd.ManGe_IpProxy_Servers()
     go_main()
+    #print()

@@ -34,6 +34,11 @@ def get_ips():
     print(a[number])
     return a[number]
 
+#获取所有的代理ip
+def get_allips():
+    r =  redis.StrictRedis(connection_pool = pool)
+    return r.zrange('ips:qgjz',0,-1,desc=True)
+
 #获取IP队列总数
 def get_ipqueue_len():
 	r =  redis.StrictRedis(connection_pool = pool)
@@ -60,9 +65,7 @@ def IPQueue_MemoryProtection(func=None):
 
 
 
-# 	1. 根据当前池子里的ip数量控制判断ip的存活性的检测周期   Max 10s
-# 	2. 根据当前池子里的ip数量控制判断ip的存活性的线程数 	Max 25
-# 	3. poollen/1000  
+ 
 
 #获取当前代理池的总量
 def get_PoolLen():
@@ -76,14 +79,16 @@ def get_jcThreadNumber():
 	print(int(poollen/1000))
 	if int(poollen/1000)<=0:
 		jc_ThreadNumber = 1
-	elif int(poollen/1000)<=20:
+	elif int(poollen/1000)<=25:
 		jc_ThreadNumber = int(poollen/1000)
 	else:
-		jc_ThreadNumber = 20
+		jc_ThreadNumber = 25
 	print("\n\n get_jcThreadNumber  **********",jc_ThreadNumber)
 	return jc_ThreadNumber
 
-
+# 	1. 根据当前池子里的ip数量控制判断ip的存活性的检测周期   Max 10s
+# 	2. 根据当前池子里的ip数量控制判断ip的存活性的线程数 	Max 25
+# 	3. poollen/1000 
 def ipChecker_Thread(func=None):
     def deco(func):
         def wrapper(*args,**kwargs):
@@ -129,4 +134,19 @@ def ManIPinfos():
 		start_man_api()
 
 
-ManIPinfos()
+#ManIPinfos()
+
+
+# 1. 当线程池的数量大于限制数量时，让取队列的线程进行休息，保证了线程池不会无限增长
+
+
+# 2. 内置redis 启动
+
+
+# 3. 内置tornado 并开放接口
+
+
+# 4. 配置文件 config
+
+
+# 5. 
