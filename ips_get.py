@@ -46,7 +46,6 @@ def get_crossincode_run():
 			print(ipproxy1)
 			toredis.add(ipproxy1)
 
-
 def get_crossincode_ips():
 	#加个延时，避免在一起爬取数据
 	time.sleep(20)
@@ -54,7 +53,6 @@ def get_crossincode_ips():
 		get_crossincode_run()
 		print("sleep...")
 		time.sleep(10*60)
-
 
 
 
@@ -96,14 +94,12 @@ def get_xiladaili_run():
 				print(ipproxy1)
 				toredis.add(ipproxy1)
 
-
 def get_xiladaili_ips():
 	time.sleep(40)
 	while 1:
 		get_xiladaili_run()
 		print("sleep...")
 		time.sleep(10*60)
-
 
 
 
@@ -139,9 +135,6 @@ def get_jiangxianli_ips():
 
 
 
-
-
-
 #		superfastip
 #		http://www.superfastip.com/welcome/freeip/1  
 #		/1  ~  /10
@@ -167,15 +160,11 @@ def get_superfastip_run():
 
 
 
-
-
-
 #		kxdaili
 #		http://www.kxdaili.com/dailiip/1/1.html 
 # 		/1  ~  /6
 #		http://www.kxdaili.com/dailiip/2/1.html 
 # 		/1  ~ /4
-
 def kxdaili_get_ip(html):
 	kxdaili_1_ipTbody = '//div[@class="hot-product-content"]/table/tbody'
 	kxdaili_1_ipTbody_datas = rpub.PubXpath.get_html(html,kxdaili_1_ipTbody)
@@ -209,8 +198,6 @@ def get_kxdaili_run():
 		kxdaili_2_html = mreq.ManGeReq.geturl(kxdaili_2_url)
 		kxdaili_get_ip(kxdaili_2_html)
 		kxdaili_2_pg+=1
-
-
 
 
 
@@ -252,7 +239,6 @@ for mimvp_ip_infos in rpub.get_alltr_data(mimvp_ipTbody_datas):
 
 
 
-
 #		kuaidaili
 #		https://www.kuaidaili.com/free/inha/1/ 
 #		/1   ~   /1000
@@ -282,10 +268,6 @@ def get_kuaidaili_ips():
 		get_kuaidaili_run()
 		print("sleep...")
 		time.sleep(10*60)
-
-#get_kuaidaili_run()
-
-
 
 
 
@@ -318,43 +300,160 @@ def get_w66ip_run():
 
 
 
-
-
-
 # 		w89ip
 # 		http://www.89ip.cn/index_1.html
-# 		1~5
+# 		1~ 6
+def get_w89ip_run():
+	w89ip_pg = 1
+	while w89ip_pg<7:
+		w89ip_url = "http://www.89ip.cn/index_"+str(w89ip_pg)+".html"
+		w89ip_html = mreq.ManGeReq.geturl(w89ip_url)
+		#print(w89ip_html)
+		#/html/body/meta"utf-8"/div[4]/div[1]/div/div[1]/table/tbody
+		w89ip_ipTbody = '//table[@class="layui-table"]/tbody'
+		w89ip_ipTbody_datas = rpub.PubXpath.get_html(w89ip_html,w89ip_ipTbody)
+		#print(w89ip_ipTbody_datas)
+		for w89ip_ip_infos in rpub.get_onlytr_data(w89ip_ipTbody_datas):
+			#print(w89ip_ip_infos)
+			w89ip_iptd = rpub.get_onlytd_data(w89ip_ip_infos)
+			#print(w89ip_iptd)
+			ipnumber = re.sub('(\n\t\t\t)|(\t\t)','',w89ip_iptd[0])
+			port = re.sub('(\n\t\t\t)|(\t\t)','',w89ip_iptd[1])
+			ipproxy_1 = "http://"+ipnumber+":"+port
+			ipproxy_2 = "https://"+ipnumber+":"+port
+			print(ipproxy_1)
+			print(ipproxy_2)
+			toredis.add(ipproxy_1)
+			toredis.add(ipproxy_2)
+		time.sleep(1)
+		w89ip_pg+=1
 
 
 
-
+# 		json89ip
+#		http://www.89ip.cn/tqdl.html?num=1000
+#
+def get_json89ip_run():
+	json89ip_url = "http://www.89ip.cn/tqdl.html?num=1000"
+	json89ip_html = mreq.ManGeReq.geturl(json89ip_url)
+	#print(json89ip_html)
+	#/html/body/meta"utf-8"/div[4]/div[1]/div/div
+	json89ip_ipTbody = '//div[@class="fly-panel"]/div/text()'
+	json89ip_ipTbody_datas = rpub.PubXpath.get_htmltxt(json89ip_html,json89ip_ipTbody)
+	#print(json89ip_ipTbody_datas)
+	ipproxy_1 = re.sub('\n','',json89ip_ipTbody_datas[0])
+	print(ipproxy_1.split()[0])
+	toredis.add("http://"+ipproxy_1.split()[0])
+	toredis.add("https://"+ipproxy_1.split()[0])
+	for json89ip_ip_infos in json89ip_ipTbody_datas[1:-4]:
+		#print(json89ip_ip_infos)
+		toredis.add(json89ip_ip_infos)
+		ipproxy_1 = "http://"+json89ip_ip_infos
+		ipproxy_2 = "https://"+json89ip_ip_infos
+		print(ipproxy_1)
+		print(ipproxy_2)
+		toredis.add(ipproxy_1)
+		toredis.add(ipproxy_2)
 
 
 
 # 		qydaili
 # 		http://www.qydaili.com/free/?action=china&page=1
-# 		1~25
-
-
-
-
+# 		1~10
+def get_qydaili_run():
+	qydaili_pg = 1
+	while qydaili_pg<11:
+		qydaili_url = "http://www.qydaili.com/free/?action=china&page="+str(qydaili_pg)
+		qydaili_html = mreq.ManGeReq.geturl(qydaili_url)
+		#print(qydaili_html)
+		#//*[@id="content"]/section/div[2]/table/tbody
+		qydaili_ipTbody = '//div[@class="container"]/table/tbody'
+		qydaili_ipTbody_datas = rpub.PubXpath.get_html(qydaili_html,qydaili_ipTbody)
+		#print(qydaili_ipTbody_datas)
+		#print(rpub.get_onlytr_data(qydaili_ipTbody_datas))
+		for qydaili_ip_infos in rpub.get_onlytr_data(qydaili_ipTbody_datas):
+			qydaili_iptd = rpub.get_propertytd_data(qydaili_ip_infos)
+			#print(qydaili_iptd)
+			ipproxy = qydaili_iptd[3].lower()+"://"+qydaili_iptd[0]+":"+qydaili_iptd[1]
+			print(ipproxy)
+			toredis.add(ipproxy)
+		time.sleep(1)
+		qydaili_pg+=1
 
 
 
 # 		ip3366
 # 		http://www.ip3366.net/free/?stype=1&page=1
 # 		1~6
-
-
-
+def get_ip3366_run():
+	ip3366_pg = 1
+	while ip3366_pg<7:
+		ip3366_url = "http://www.ip3366.net/free/?stype=1&page="+str(ip3366_pg)
+		ip3366_html = mreq.ManGeReq.geturl(ip3366_url)
+		#print(ip3366_html)
+		#//div[@id="list"]/table/tbody
+		ip3366_ipTbody = '//div[@id="list"]/table/tbody'
+		ip3366_ipTbody_datas = rpub.PubXpath.get_html(ip3366_html,ip3366_ipTbody)
+		#print(ip3366_ipTbody_datas)
+		for ip3366_ip_infos in rpub.get_onlytr_data(ip3366_ipTbody_datas):
+			ip3366_iptd = rpub.get_onlytd_data(ip3366_ip_infos)
+			#print(ip3366_iptd)
+			ipproxy = ip3366_iptd[3].lower()+"://"+ip3366_iptd[0]+":"+ip3366_iptd[1]
+			print(ipproxy)
+			toredis.add(ipproxy)
+		ip3366_pg+=1
+		time.sleep(1)
 
 
 
 # 		xicidaili
 # 		https://www.xicidaili.com/nn/1
 # 		1~2345
+def get_xicidaili_run():
+	xicidaili_pg = 1
+	while xicidaili_pg<2345:
+		xicidaili_url = "https://www.xicidaili.com/nn/"+str(xicidaili_pg)
+		xicidaili_html = mreq.ManGeReq.geturl(xicidaili_url)
+		#print(xicidaili_html)
+		#//table[@id="ip_list"]/tbody
+		xicidaili_ipTbody = '//div[@id="body"]/table'
+		xicidaili_ipTbody_datas = rpub.PubXpath.get_html(xicidaili_html,xicidaili_ipTbody)
+		#print(xicidaili_ipTbody_datas)
+		for xicidaili_ip_infos in rpub.get_alltr_data(xicidaili_ipTbody_datas)[1:]:
+			#print(xicidaili_ip_infos)
+			xicidaili_iptd = rpub.get_onlytd_data(xicidaili_ip_infos)
+			#print(xicidaili_iptd)
+			ipproxy = xicidaili_iptd[3].lower()+"://"+xicidaili_iptd[0]+":"+xicidaili_iptd[1]
+			print(ipproxy)
+			toredis.add(ipproxy)
+			#print("\n\n")
+		xicidaili_pg+=1
+		time.sleep(1)
+
+def get_xicidaili_ips():
+	time.sleep(60)
+	while 1:
+		get_xicidaili_run()
+		print("sleep...")
+		time.sleep(10*60)
 
 
+
+# 		iphai
+# 		http://www.iphai.com/free/ng
+# 		http://www.iphai.com/free/wg
+
+
+
+#	 	goubanjia
+#		http://www.goubanjia.com/
+#
+
+
+
+#
+#
+#
 
 
 
@@ -374,6 +473,14 @@ def get_ip_run():
 		get_kxdaili_run()
 		time.sleep(10)
 		get_w66ip_run()
+		time.sleep(10)
+		get_w89ip_run()
+		time.sleep(10)
+		get_json89ip_run()
+		time.sleep(10)
+		get_qydaili_run()
+		time.sleep(10)
+		get_ip3366_run()
 
 		time.sleep(10*60)
 

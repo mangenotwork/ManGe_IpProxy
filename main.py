@@ -37,6 +37,7 @@ r =  redis.StrictRedis(connection_pool = pool)
 #JCUrl = "https://www.baidu.com/"
 JCUrl = "http://www.httpbin.org/ip"
 
+
 #验证代理的相对响应时间
 NormalTime = 1.0
 
@@ -44,7 +45,7 @@ NormalTime = 1.0
 ipChecker_ThreadNumber = 5
 
 #在ip队列里取出有效ip的线程数
-yzips_ThreadNumber = 3
+yzips_ThreadNumber = 5
 
 
 
@@ -161,18 +162,23 @@ def ipChecker():
 
 #执行检查IP贷理池的存活性
 def ipChecker_run(iplist):
-    print(iplist)
-    for ipinfo in iplist:
-        #print(yzPub(ipinfo))
-        # 如果ip还可以用就更新 请求时间； 否则删除
-        yzKeys,seconddata = yzPub(ipinfo)
-        if yzKeys and seconddata < NormalTime:
-            print(ipinfo," --> ip可用，更新到ip池")
-            #r.zadd('ips:ips', {ipinfo:float(seconddata)} )
-            r.zadd(IPPools, float(seconddata), ipinfo )
-        else:
-            print(ipinfo," --> ip不可用")
-            r.zrem(IPPools, ipinfo)
+	print(iplist)
+	if iplist != []:
+	    for ipinfo in iplist:
+	        #print(yzPub(ipinfo))
+	        # 如果ip还可以用就更新 请求时间； 否则删除
+	        yzKeys,seconddata = yzPub(ipinfo)
+	        if yzKeys and seconddata < NormalTime:
+	            print(ipinfo," --> ip可用，更新到ip池")
+	            #r.zadd('ips:ips', {ipinfo:float(seconddata)} )
+	            r.zadd(IPPools, float(seconddata), ipinfo )
+	        else:
+	            print(ipinfo," --> ip不可用")
+	            r.zrem(IPPools, ipinfo)
+	else:
+		time.sleep(10)
+		print("iplist is null ipChecker_run wite 10s ...")
+
 
 
 #运行ipChecker
@@ -221,13 +227,14 @@ def go_main_old():
 #新的启动方式
 def go_main():
     #cores = multiprocessing.cpu_count()
-    pool = multiprocessing.Pool(processes=6)
+    pool = multiprocessing.Pool(processes=7)
     while True:
         pool.apply_async(go_yzips, ())#IP队列赛选进程
         pool.apply_async(go_ipChecker, ())#IP池检查进程
         pool.apply_async(nimadaili.go_nimadaili_run, ())# nimadaili 代理爬虫
         pool.apply_async(getips.get_kuaidaili_ips, ())# kuaidaili 代理爬虫
         pool.apply_async(getips.get_ip_run, ())# 代理爬虫
+        pool.apply_async(getips.get_xicidaili_ips, ())# xici代理爬虫
         #print("有进程死掉,等待3s")
         time.sleep(3)
     print("-----start-----")

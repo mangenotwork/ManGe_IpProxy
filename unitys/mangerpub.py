@@ -34,6 +34,14 @@ class PubXpath():
 			t += etree.tostring(i, encoding="utf-8", pretty_print=True).decode("utf-8")
 		return t
 
+	@classmethod
+	def get_htmltxt(cls, html, xpathcmd):
+		html = str(html)
+		all_list_datas = []
+		datas = etree.HTML(html)
+		info = datas.xpath(xpathcmd)
+		return info
+
 
 	
 #获取tr
@@ -73,6 +81,14 @@ def get_propertytd_data(html):
 #获取table
 def get_table(html):
     reg = r"<table.+?</table>"
+    reger = re.compile(reg, re.S)
+    data = re.findall(reger, str(html))
+    return data
+
+
+#获取 json89ip 的正则
+def get_json89ip_zz(html):
+    reg = r">(.+?)<br/"
     reger = re.compile(reg, re.S)
     data = re.findall(reger, str(html))
     return data
