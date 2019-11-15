@@ -1,10 +1,9 @@
 import os
 import time
 import subprocess
+import unitys
+import webbrowser as web
 
-
-def ManGe_IpProxy_Path():
-	return os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 
 
@@ -21,15 +20,19 @@ def open_py(args):
 
 
 #开启 Redis
-def start_redis():
-    Redis_path = Man_API_Path+"\\Redis-x64-3.2.100\\"
-    start_redis_cmd = Redis_path+"redis-server.exe "+Redis_path+"redis.windows.conf"
-    print(start_redis_cmd)
-    open_py(start_redis_cmd)
+def ManGe_IpProxy_Redis():
+    if unitys.Config.openRedis():
+        print(unitys.OpenPluginRedisCMD())
+        open_py(unitys.OpenPluginRedisCMD())
+    else:
+        print("不启用内置Redis")
 
-
+#启动内置servers
 def ManGe_IpProxy_Servers():
-	path = ManGe_IpProxy_Path()+"\\unitys\\ipapi.py"
-	print(path)
-	open_py("python "+path)
+    if unitys.Config.openServer():
+       open_py(unitys.OpenPluginServersCMD())
+       time.sleep(1)
+       web.open_new_tab("http://127.0.0.1:"+str(unitys.Config.serversPort()))
+    else:
+        print("不启用内置Servers")
 

@@ -56,6 +56,12 @@ def get_alltr_data(html):
     reger = re.compile(reg, re.S)
     data = re.findall(reger, str(html))
     return data
+def get_tr_html(html):
+    reg = r"<tr.+?</tr>"
+    reger = re.compile(reg, re.S)
+    data = re.findall(reger, str(html))
+    return data
+
 
 
 #获取td

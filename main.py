@@ -9,48 +9,24 @@ import redis
 import requests
 import threading
 import multiprocessing
-
+import unitys
 
 
 #from multiprocessing import Process
 
-# 导入 nimadaili 代理
-import ips_nimadaili as nimadaili
-# 导入 爬取代理
-import ips_get as getips
+from unitys import ips_get as getips
 from unitys import addtoredis as toredis
 from unitys import mangecmd as mangecmd
 
-#ip队列
-IPQueue = "ip:queue"
-#ip代理池
-#IPPools = "ips:pool"
-IPPools = "ips:qgjz"
-#redis主机ip地址
-HostIP = '192.168.1.20'
 
-pool = redis.ConnectionPool(host = HostIP,port = 6379, db = 7,password = None,decode_responses = True)
-r =  redis.StrictRedis(connection_pool = pool)
+IPQueue = unitys.Config.ipQueue()
+IPPools = unitys.Config.ipPool()
 
+r =  redis.StrictRedis(connection_pool = unitys.RedisConPool())
 
-
-#验证代理ip有效性地址
-#JCUrl = "http://jzsc2016.mohurd.gov.cn/asite/jsbpp/index"
-#JCUrl = "https://www.baidu.com/"
-JCUrl = "http://www.httpbin.org/ip"
-
-
-#验证代理的相对响应时间
-NormalTime = 1.0
-
-#判断ip的存活性的线程数
-#ipChecker_ThreadNumber = 10
-
-#在ip队列里取出有效ip的线程数
-yzips_ThreadNumber = 20
-
-
-
+JCUrl = unitys.Config.jcUrl()
+NormalTime = unitys.Config.normalTime()
+yzips_ThreadNumber = unitys.Config.yzipThreadNumber()
 
 
 
@@ -75,6 +51,7 @@ def yzPub(ipinfo):
 
 
 #  1. 取爬回来的IP队列进行验证有效性和时间，再放入 ip池子
+@toredis.IPPool_MemoryProtection
 def yzips():
 	#检查 redis list数据长度如果为空就不执行，让其等待10s
 	if r.llen(IPQueue) != 0:
@@ -215,8 +192,6 @@ def go_main_old():
     pid_yzips = Process(target=go_yzips, args=())
     #IP池检查进程
     pid_ipChecker = Process(target=go_ipChecker, args=())
-    # nimadaili 代理爬虫
-    pid_nimadaili = Process(target=nimadaili.go_nimadaili_run, args=())
     # crossincode 代理爬虫
     pid_crossincode = Process(target=getips.get_crossincode_ips, args=())
     # xiladaili 代理爬虫
@@ -229,6 +204,10 @@ def go_main_old():
         i.join()
 
 
+def run_servers():
+    time.sleep(5)
+    mangecmd.ManGe_IpProxy_Servers()
+
 #新的启动方式
 def go_main():
     #cores = multiprocessing.cpu_count()
@@ -236,11 +215,10 @@ def go_main():
     while True:
         pool.apply_async(go_yzips, ())#IP队列赛选进程
         pool.apply_async(go_ipChecker, ())#IP池检查进程
-        pool.apply_async(nimadaili.go_nimadaili_run, ())# nimadaili 代理爬虫
         pool.apply_async(getips.get_kuaidaili_ips, ())# kuaidaili 代理爬虫
         pool.apply_async(getips.get_ip_run, ())# 代理爬虫
         pool.apply_async(getips.get_xicidaili_ips, ())# xici代理爬虫
-        #print("有进程死掉,等待3s")
+        pool.apply_async(run_servers, ())# xici代理爬虫
         time.sleep(3)
     print("-----start-----")
     pool.close() # 关闭进程池，关闭后po不再接收新的请求
@@ -249,6 +227,6 @@ def go_main():
 
 
 if __name__=='__main__':
-    mangecmd.ManGe_IpProxy_Servers()
+    mangecmd.ManGe_IpProxy_Redis()
     go_main()
-    #print()
+    #toredis.ManIPinfos()
